@@ -18,6 +18,7 @@ import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { AuthModule } from './auth/auth.module';
 import { FileModule } from './file/file.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ClientModule } from './client/client.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     RoleModule,
     AuthModule,
     FileModule,
+    ClientModule,
   ],
   controllers: [AppController],
   providers: [AppService],
