@@ -16,11 +16,17 @@ import { MenuModule } from './menu/menu.module';
 import { RoleModule } from './role/role.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { AuthModule } from './auth/auth.module';
+import { FileModule } from './file/file.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       // load: [EnvVaribales],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'public'),
+      serveRoot: '/',
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -64,6 +70,7 @@ import { AuthModule } from './auth/auth.module';
     MenuModule,
     RoleModule,
     AuthModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

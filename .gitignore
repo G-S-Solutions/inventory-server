@@ -4,6 +4,8 @@
 /build
 /postgres
 /generated
+/public/uploads/*
+!public/uploads/.gitkeep
 
 # Logs
 logs
