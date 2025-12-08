@@ -10,7 +10,7 @@ export class FileService {
   async uploadImage(file: Express.Multer.File) {
     // Aquí podrías agregar lógica adicional para manejar la imagen subida,
     // como guardarla en una base de datos, procesarla, etc.
-    console.log(file)
+    // console.log(file)
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = extname(file.originalname);
     const filename = `image-${uniqueSuffix}${ext}`;
@@ -19,12 +19,7 @@ export class FileService {
     writeFileSync(filePath, file.buffer);
 
     return {
-      filename,
-      originalName: file.originalname,
-      url: `/file/image/${filename}`,
-      path: `/uploads/${filename}`,
-      size: file.size,
-      mimetype: file.mimetype,
+      url: `/uploads/${filename}`,
     };
   }
 
