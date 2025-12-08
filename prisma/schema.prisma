@@ -42,6 +42,7 @@ model User {
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   role    Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  eventsSupervised InventoryEvent[]
 
   @@index([companyId])
 }
@@ -110,4 +111,55 @@ model RoleMenu {
   @@unique([roleId, menuId])
   @@index([roleId])
   @@index([menuId])
+}
+
+model Client {
+  id        String   @id @default(uuid())
+  name      String   // Ej: "MIFARMA", "FAP"
+  ruc       String?  
+  address   String?  // Dirección fiscal principal (opcional)
+  logo      String?  // URL del logo para reportes
+  isActive  Boolean  @default(true)
+  
+  events    InventoryEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+  updatedBy String?
+}
+
+model InventoryEvent {
+  id          String   @id @default(uuid())
+  code        String   @unique // Autogenerado: "INV-2025-001"
+  
+  // Datos específicos de la visita (basado en tus reportes)
+  storeName   String?  // Ej: "Tienda: 481 EL TRIGAL 2"
+  address     String?  // Ej: "AV ALFREDO BENAVIDES 4670"
+  scheduledAt DateTime // Fecha: 06/10/2025
+  
+  status      EventStatus @default(SCHEDULED)
+  observation String?
+
+  // Relaciones
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id])
+
+  supervisorId String
+  supervisor   User    @relation(fields: [supervisorId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?
+  updatedBy   String?
+
+  @@index([clientId])
+  @@index([supervisorId])
+}
+
+enum EventStatus {
+  SCHEDULED
+  IN_PROGRESS
+  FINISHED
+  CANCELLED
 }
