@@ -11,9 +11,10 @@ export class FileService {
     // Aquí podrías agregar lógica adicional para manejar la imagen subida,
     // como guardarla en una base de datos, procesarla, etc.
     // console.log(file)
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    // use uuid 
+    const uniqueSuffix = Date.now();
     const ext = extname(file.originalname);
-    const filename = `image-${uniqueSuffix}${ext}`;
+    const filename = `${uniqueSuffix}${ext}`;
     const filePath = join(this.uploadPath, filename);
 
     writeFileSync(filePath, file.buffer);
