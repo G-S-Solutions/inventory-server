@@ -19,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
 import { FileModule } from './file/file.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ClientModule } from './client/client.module';
+import { InventoryEventModule } from './inventory-event/inventory-event.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { ClientModule } from './client/client.module';
     AuthModule,
     FileModule,
     ClientModule,
+    InventoryEventModule,
   ],
   controllers: [AppController],
   providers: [AppService],
