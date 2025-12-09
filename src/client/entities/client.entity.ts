@@ -5,18 +5,30 @@ export class Client {
   @Field(() => ID)
   id: string;
 
-  @Field()
+  @Field(() => String)
   name: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   ruc?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   address?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   logo?: string;
 
-  @Field()
+  @Field(() => Boolean)
   isActive: boolean;
+
+  @Field(() => Date)
+  createdAt: Date;
+  
+  @Field(() => Date, { nullable: true })
+  updatedAt?: Date;
+  
+  @Field(() => String, { nullable: true })
+  createdBy?: string;
+
+  @Field(() => String, { nullable: true })
+  updatedBy?: string;
 }

@@ -115,7 +115,7 @@ model RoleMenu {
 
 model Client {
   id        String   @id @default(uuid())
-  name      String   // Ej: "MIFARMA", "FAP"
+  name      String   @unique
   ruc       String?  
   address   String?  // Dirección fiscal principal (opcional)
   logo      String?  // URL del logo para reportes

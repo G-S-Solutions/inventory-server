@@ -137,6 +137,19 @@ type AuthResponse {
   token: String!
 }
 
+type Client {
+  id: ID!
+  name: String!
+  ruc: String
+  address: String
+  logo: String
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  createdBy: String
+  updatedBy: String
+}
+
 type Query {
   userFindAll: [User!]!
   userById(id: String!): User!
@@ -148,6 +161,8 @@ type Query {
   roleFindOne(id: String!): Role!
   authValidateToken: String!
   authUserInfo: ContextUser!
+  clientFindAll: [Client!]!
+  clientFindById(id: ID!): Client!
 }
 
 type Mutation {
@@ -166,6 +181,9 @@ type Mutation {
   roleAssignMenus(assignMenuInput: AssignMenuInput!): Boolean!
   authLogin(loginInput: LoginInput!): AuthResponse!
   authChangePassword(changePasswordInput: ChangePasswordInput!): Boolean!
+  clientCreate(createClientInput: CreateClientInput!): Client!
+  clientUpdate(updateClientInput: UpdateClientInput!): Client!
+  clientRemove(id: ID!): Client!
 }
 
 input CreateUserInput {
@@ -267,4 +285,21 @@ input LoginInput {
 input ChangePasswordInput {
   currentPassword: String!
   newPassword: String!
+}
+
+input CreateClientInput {
+  name: String!
+  ruc: String
+  address: String
+  logo: String
+  isActive: Boolean
+}
+
+input UpdateClientInput {
+  name: String
+  ruc: String
+  address: String
+  logo: String
+  isActive: Boolean
+  id: String!
 }

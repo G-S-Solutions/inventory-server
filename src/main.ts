@@ -8,7 +8,7 @@ async function bootstrap() {
     // logger: ['error', 'warn', 'debug', 'fatal','verbose']
   });
   const acceptedUrls = process.env.ACCEPTED_URLS?.split(', ');
-  console.log({acceptedUrls})
+  // console.log({acceptedUrls})
 
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
