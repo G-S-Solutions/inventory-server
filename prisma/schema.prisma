@@ -133,10 +133,11 @@ model InventoryEvent {
   id          String   @id @default(uuid())
   code        String   @unique // Autogenerado: "INV-2025-001"
   
-  // Datos específicos de la visita (basado en tus reportes)
+  // Datos especificos de la visita
   storeName   String?  // Ej: "Tienda: 481 EL TRIGAL 2"
   address     String?  // Ej: "AV ALFREDO BENAVIDES 4670"
-  scheduledAt DateTime // Fecha: 06/10/2025
+  startDate DateTime // Fecha: 06/10/2025
+  endDate   DateTime // Fecha: 06/10/2025
   
   status      EventStatus @default(SCHEDULED)
   observation String?
@@ -152,9 +153,6 @@ model InventoryEvent {
   updatedAt   DateTime @updatedAt
   createdBy   String?
   updatedBy   String?
-
-  @@index([clientId])
-  @@index([supervisorId])
 }
 
 enum EventStatus {

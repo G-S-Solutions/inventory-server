@@ -150,6 +150,32 @@ type Client {
   updatedBy: String
 }
 
+type InventoryEvent {
+  id: ID!
+  code: String!
+  storeName: String
+  address: String
+  startDate: DateTime!
+  endDate: DateTime!
+  status: EventStatus!
+  clientId: String!
+  supervisorId: String!
+  observation: String
+  createdAt: DateTime!
+  updatedAt: DateTime
+  createdBy: String!
+  updatedBy: String
+  client: Client!
+  supervisor: User!
+}
+
+enum EventStatus {
+  SCHEDULED
+  IN_PROGRESS
+  FINISHED
+  CANCELLED
+}
+
 type Query {
   userFindAll: [User!]!
   userById(id: String!): User!
@@ -163,6 +189,8 @@ type Query {
   authUserInfo: ContextUser!
   clientFindAll: [Client!]!
   clientFindById(id: ID!): Client!
+  invEventFindAll: [InventoryEvent!]!
+  invEventFindById(id: ID!): InventoryEvent!
 }
 
 type Mutation {
@@ -184,6 +212,9 @@ type Mutation {
   clientCreate(createClientInput: CreateClientInput!): Client!
   clientUpdate(updateClientInput: UpdateClientInput!): Client!
   clientRemove(id: ID!): Client!
+  invEventCreate(createInvEvntInput: CreateInventoryEventInput!): InventoryEvent!
+  invEventUpdate(updateInvEvntInput: UpdateInventoryEventInput!): InventoryEvent!
+  invEventRemove(id: ID!): InventoryEvent!
 }
 
 input CreateUserInput {
@@ -302,4 +333,29 @@ input UpdateClientInput {
   logo: String
   isActive: Boolean
   id: String!
+}
+
+input CreateInventoryEventInput {
+  code: String!
+  storeName: String
+  address: String
+  startDate: DateTime!
+  endDate: DateTime!
+  status: EventStatus!
+  clientId: String!
+  supervisorId: String!
+  observation: String
+}
+
+input UpdateInventoryEventInput {
+  code: String
+  storeName: String
+  address: String
+  startDate: DateTime
+  endDate: DateTime
+  status: EventStatus
+  clientId: String
+  supervisorId: String
+  observation: String
+  id: ID!
 }

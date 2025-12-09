@@ -18,11 +18,7 @@ export class InventoryEventResolver {
   @Query(() => [InventoryEvent], { name: 'invEventFindAll' })
   findAll(
     @SelectFields() select: PrismaSelect,
-    @CurrentUser([
-      ValidRoles.ROOT,
-      ValidRoles.ADMIN,
-      ValidRoles.SUPERVISOR
-    ]) user: ContextUser,
+    @CurrentUser() user: ContextUser,
   ) {
     return this.inventoryEventService.findAll(select, user);
   }
@@ -31,11 +27,7 @@ export class InventoryEventResolver {
   findOne(
     @Args('id', { type: () => ID }) id: string,
     @SelectFields() select: PrismaSelect,
-    @CurrentUser([
-      ValidRoles.ROOT,
-      ValidRoles.ADMIN,
-      ValidRoles.SUPERVISOR
-    ]) user: ContextUser,
+    @CurrentUser() user: ContextUser,
   ) {
     return this.inventoryEventService.findOne(id, select, user);
   }
@@ -62,6 +54,7 @@ export class InventoryEventResolver {
       ValidRoles.SUPERVISOR
     ]) user: ContextUser,
   ) {
+    console.log('updating ...')
     return this.inventoryEventService.update(
       updateInvEvntInput.id,
       updateInvEvntInput,
