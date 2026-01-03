@@ -5,13 +5,20 @@ import { PrismaSelect } from 'src/common/types';
 import { ContextUser } from 'src/common/entities/ContextUser';
 import { CommonService } from 'src/common/services/common.service';
 import { PrismaService } from 'src/common/services/prisma.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class InventoryEventService {
+  appMode: string;
+  deviceId: string;
   constructor(
     private readonly prisma: PrismaService,
     private readonly common: CommonService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.appMode = this.configService.get<string>('APP_MODE');
+    this.deviceId = this.configService.get<string>('DEVICE_ID');
+  }
 
   async findAll(select: PrismaSelect, contextUser: ContextUser) {
     try {
@@ -45,6 +52,8 @@ export class InventoryEventService {
     contextUser: ContextUser,
   ) {
     try {
+      const isSynced = this.appMode === 'CLOUD'; 
+      const deviceId = this.deviceId || 'UNKNOWN-DEVICE';
 
       const {code, clientId, supervisorId, ...restDto} = createInventoryEventInput;
 
@@ -72,6 +81,8 @@ export class InventoryEventService {
           code: code.trim(),
           clientId,
           supervisorId,
+          originDevice: deviceId,
+          isSynced: isSynced,
           createdBy: contextUser.id,
         },
       });
