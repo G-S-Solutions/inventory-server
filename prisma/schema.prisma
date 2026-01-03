@@ -40,8 +40,8 @@ model User {
   createdBy String?
   updatedBy String?
 
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  role    Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  company          Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role             Role             @relation(fields: [roleId], references: [id], onDelete: Cascade)
   eventsSupervised InventoryEvent[]
 
   @@index([companyId])
@@ -64,7 +64,7 @@ model Role {
 
   // company         Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
   users User[]
-  menus  RoleMenu[]
+  menus RoleMenu[]
   // rolePermissions RolePermission[]
 
   @@unique([name]) // Un rol único por nombre dentro de cada empresa
@@ -78,7 +78,7 @@ model Menu {
   type        String   @default("link") // Tipo de menú: "link", "dropdown"
   position    String   @default("top") // Posición: "sidebar", "topbar"
   description String?
-  path        String   // Ruta en el frontend: "/ventas", "/inventario"
+  path        String // Ruta en el frontend: "/ventas", "/inventario"
   icon        String? // Nombre del ícono (ej: "shopping-cart", "package")
   order       Int      @default(0) // Orden por defecto
   parentId    String? // Para menús anidados (submenús)
@@ -96,14 +96,14 @@ model Menu {
 }
 
 model RoleMenu {
-  id          String   @id @default(uuid())
-  roleId      String
-  menuId      String
-  isActive    Boolean  @default(true) 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   String?
-  updatedBy   String?
+  id        String   @id @default(uuid())
+  roleId    String
+  menuId    String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+  updatedBy String?
 
   role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
   menu Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
@@ -114,14 +114,17 @@ model RoleMenu {
 }
 
 model Client {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  ruc       String?  
-  address   String?  // Dirección fiscal principal (opcional)
-  logo      String?  // URL del logo para reportes
-  isActive  Boolean  @default(true)
-  
-  events    InventoryEvent[]
+  id       String  @id @default(uuid())
+  name     String  @unique
+  ruc      String?
+  address  String? // Dirección fiscal principal (opcional)
+  logo     String? // URL del logo para reportes
+  isActive Boolean @default(true)
+
+  events InventoryEvent[]
+
+  isSynced Boolean   @default(true) // Generalmente nacen en Nube (True)
+  syncedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -130,34 +133,167 @@ model Client {
 }
 
 model InventoryEvent {
-  id          String   @id @default(uuid())
-  code        String   @unique // Autogenerado: "INV-2025-001"
-  
+  id   String @id @default(uuid())
+  code String @unique // Autogenerado: "INV-2025-001"
+
   // Datos especificos de la visita
-  storeName   String?  // Ej: "Tienda: 481 EL TRIGAL 2"
-  address     String?  // Ej: "AV ALFREDO BENAVIDES 4670"
+  storeName String? // Ej: "Tienda: 481 EL TRIGAL 2"
+  address   String? // Ej: "AV ALFREDO BENAVIDES 4670"
   startDate DateTime // Fecha: 06/10/2025
   endDate   DateTime // Fecha: 06/10/2025
-  
+
   status      EventStatus @default(SCHEDULED)
   observation String?
 
   // Relaciones
-  clientId    String
-  client      Client   @relation(fields: [clientId], references: [id])
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id])
 
   supervisorId String
-  supervisor   User    @relation(fields: [supervisorId], references: [id])
+  supervisor   User   @relation(fields: [supervisorId], references: [id])
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   String?
-  updatedBy   String?
+  // --- NUEVO: Tablas Hijas ---
+  products  ImportedProduct[]
+  areas     InventoryArea[]
+  tags      InventoryTag[]
+  operators EventOperator[]
+
+  // --- NUEVO: Control de Sincronización ---
+  isSynced     Boolean   @default(false) // Nace en False en local
+  syncedAt     DateTime?
+  originDevice String? // Para saber desde qué laptop vino (ej: "LAPTOP-JUAN")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+  updatedBy String?
 }
 
 enum EventStatus {
-  SCHEDULED
-  IN_PROGRESS
-  FINISHED
-  CANCELLED
+  SCHEDULED //Planificado en la oficina
+  IN_PROGRESS //La laptop está en la tienda y los operarios están contando.
+  FINISHED // Se cerró el inventario y se generaron los reportes PDF.
+  CANCELLED // Inventario cancelado.
+}
+
+// --- MÓDULO DE PRODUCTOS (Carga del TXT) ---
+model ImportedProduct {
+  id      String         @id @default(uuid())
+  eventId String
+  event   InventoryEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  // Mapeo del TXT
+  productCode   String // CO_PRODUCTO
+  barcode       String // CO_BARRA (Indexado para búsqueda rápida en PDA)
+  description   String // DE_PRODUCTO
+  laboratory    String? // DE_LABORATORIO
+  unit          String? // UNIDAD
+  fractionValue Int     @default(1) // VA_FRACCION (Crítico para conteo)
+
+  // Datos Financieros/Sistema (Para reporte de diferencias)
+  systemStock Int     @default(0)
+  unitPrice   Decimal @default(0.0) @db.Decimal(10, 2)
+
+  // Control Sync
+  isSynced Boolean @default(false)
+
+  createdAt    DateTime      @default(now())
+  countRecords CountRecord[]
+
+  @@index([eventId, barcode]) // Búsqueda rápida por PDA
+}
+
+// --- MÓDULO LOGÍSTICO (Áreas y Tags/Mesas) ---
+model InventoryArea {
+  id      String         @id @default(uuid())
+  name    String // Ej: "BODEGA", "SALA", "FARMACIA"
+  eventId String
+  event   InventoryEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  tags InventoryTag[]
+
+  // Control Sync
+  isSynced Boolean @default(false)
+}
+
+model InventoryTag {
+  id          String  @id @default(uuid())
+  code        String // Ej: "02001", "02564"
+  description String? // Ej: "PASILLO 01"
+
+  eventId String
+  areaId  String
+
+  status TagStatus @default(OPEN)
+
+  event  InventoryEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  area   InventoryArea  @relation(fields: [areaId], references: [id])
+  counts CountRecord[]
+
+  // Control Sync
+  isSynced Boolean @default(false)
+
+  @@unique([eventId, code])
+}
+
+enum TagStatus {
+  OPEN // Nadie la ha tocado
+  IN_PROGRESS // Un operario la abrió en su PDA
+  CLOSED // Operario finalizó conteo
+  AUDITED // Supervisor verificó
+}
+
+// --- MÓDULO OPERARIOS (Personal de Conteo) ---
+model Operator {
+  id        String @id @default(uuid())
+  dni       String @unique // ID Conferente
+  firstName String
+  lastName  String
+
+  events EventOperator[]
+  scans  CountRecord[]
+
+  // Control Sync (Por si se crean operarios nuevos en campo)
+  isSynced  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// Tabla pivote: Un operario trabaja en muchos eventos
+model EventOperator {
+  id         String @id @default(uuid())
+  eventId    String
+  operatorId String
+
+  event    InventoryEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  operator Operator       @relation(fields: [operatorId], references: [id])
+
+  isSynced Boolean @default(false)
+
+  @@unique([eventId, operatorId])
+}
+
+// --- MÓDULO DE CONTEO (La Transacción de la PDA) ---
+model CountRecord {
+  id String @id @default(uuid())
+
+  productId  String
+  tagId      String
+  operatorId String
+
+  // El Conteo Físico
+  quantity Int // Cantidad Entera
+  fraction Int @default(0) // Cantidad Fracción (Unidades sueltas)
+
+  scannedAt DateTime @default(now()) // Hora exacta del "Bip" (Productividad)
+
+  // Relaciones
+  product  ImportedProduct @relation(fields: [productId], references: [id])
+  tag      InventoryTag    @relation(fields: [tagId], references: [id])
+  operator Operator        @relation(fields: [operatorId], references: [id])
+
+  // Control Sync (Vital: son miles de registros)
+  isSynced Boolean @default(false)
+
+  @@index([tagId])
+  @@index([operatorId])
 }
