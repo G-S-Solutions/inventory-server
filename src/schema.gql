@@ -176,6 +176,11 @@ enum EventStatus {
   CANCELLED
 }
 
+type Sync {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 type Query {
   userFindAll: [User!]!
   userById(id: String!): User!
@@ -191,6 +196,7 @@ type Query {
   clientFindById(id: ID!): Client!
   invEventFindAll: [InventoryEvent!]!
   invEventFindById(id: ID!): InventoryEvent!
+  sync(id: Int!): Sync!
 }
 
 type Mutation {
@@ -215,6 +221,9 @@ type Mutation {
   invEventCreate(createInvEvntInput: CreateInventoryEventInput!): InventoryEvent!
   invEventUpdate(updateInvEvntInput: UpdateInventoryEventInput!): InventoryEvent!
   invEventRemove(id: ID!): InventoryEvent!
+  createSync(createSyncInput: CreateSyncInput!): Sync!
+  updateSync(updateSyncInput: UpdateSyncInput!): Sync!
+  removeSync(id: Int!): Sync!
 }
 
 input CreateUserInput {
@@ -358,4 +367,15 @@ input UpdateInventoryEventInput {
   supervisorId: String
   observation: String
   id: ID!
+}
+
+input CreateSyncInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateSyncInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }

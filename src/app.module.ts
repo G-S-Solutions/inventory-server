@@ -20,11 +20,13 @@ import { FileModule } from './file/file.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ClientModule } from './client/client.module';
 import { InventoryEventModule } from './inventory-event/inventory-event.module';
+import { SyncModule } from './sync/sync.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       // load: [EnvVaribales],
+      isGlobal: true,
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'public'),
@@ -75,6 +77,7 @@ import { InventoryEventModule } from './inventory-event/inventory-event.module';
     FileModule,
     ClientModule,
     InventoryEventModule,
+    SyncModule,
   ],
   controllers: [AppController],
   providers: [AppService],
