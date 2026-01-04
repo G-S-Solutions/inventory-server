@@ -1,6 +1,8 @@
 import * as encrypter from 'bcryptjs';
-import { PrismaClient } from 'generated/prisma/client';
+import { PrismaClient } from '../../generated/prisma/client';
+import { config } from 'dotenv';
 
+config();
 const prisma = new PrismaClient()
 
 async function main() {

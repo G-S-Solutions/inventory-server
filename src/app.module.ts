@@ -21,6 +21,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ClientModule } from './client/client.module';
 import { InventoryEventModule } from './inventory-event/inventory-event.module';
 import { SyncModule } from './sync/sync.module';
+import { LogisticModule } from './logistic/logistic.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { SyncModule } from './sync/sync.module';
     ClientModule,
     InventoryEventModule,
     SyncModule,
+    LogisticModule,
   ],
   controllers: [AppController],
   providers: [AppService],

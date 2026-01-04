@@ -176,6 +176,29 @@ enum EventStatus {
   CANCELLED
 }
 
+type InventoryTag {
+  id: ID!
+  code: String!
+  description: String
+  status: TagStatus!
+  areaId: ID!
+  eventId: ID!
+}
+
+enum TagStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+  AUDITED
+}
+
+type InventoryArea {
+  id: ID!
+  name: String!
+  eventId: ID!
+  tags: [InventoryTag]!
+}
+
 type Query {
   userFindAll: [User!]!
   userById(id: String!): User!
@@ -191,6 +214,7 @@ type Query {
   clientFindById(id: ID!): Client!
   invEventFindAll: [InventoryEvent!]!
   invEventFindById(id: ID!): InventoryEvent!
+  inventoryAreas(eventId: ID!): [InventoryArea!]!
 }
 
 type Mutation {
@@ -215,6 +239,7 @@ type Mutation {
   invEventCreate(createInvEvntInput: CreateInventoryEventInput!): InventoryEvent!
   invEventUpdate(updateInvEvntInput: UpdateInventoryEventInput!): InventoryEvent!
   invEventRemove(id: ID!): InventoryEvent!
+  createArea(input: CreateAreaInput!): InventoryArea!
 }
 
 input CreateUserInput {
@@ -358,4 +383,9 @@ input UpdateInventoryEventInput {
   supervisorId: String
   observation: String
   id: ID!
+}
+
+input CreateAreaInput {
+  eventId: ID!
+  name: String!
 }

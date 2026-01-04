@@ -4,8 +4,13 @@ import { Company } from './entities/company.entity';
 import { CreateCompanyInput } from './dto/create-company.input';
 import { UpdateCompanyInput } from './dto/update-company.input';
 import { PrismaSelect } from 'src/common/types';
-import { SelectFields } from 'src/common/decorators';
+import { CurrentUser, SelectFields } from 'src/common/decorators';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { ContextUser } from 'src/common/entities/ContextUser';
+import { ValidRoles } from 'src/common/enum/valid-roles.enum';
 
+@UseGuards(JwtAuthGuard)
 @Resolver(() => Company)
 export class CompanyResolver {
   constructor(private readonly companyService: CompanyService) {}
@@ -26,6 +31,7 @@ export class CompanyResolver {
   @Mutation(() => Boolean, { name: 'companyCreate' })
   createCompany(
     @Args('createCompanyInput') createCompanyInput: CreateCompanyInput,
+    @CurrentUser([ValidRoles.ROOT]) user: ContextUser,
   ) {
     return this.companyService.create(createCompanyInput);
   }
@@ -33,6 +39,7 @@ export class CompanyResolver {
   @Mutation(() => Boolean, { name: 'companyUpdate' })
   updateCompany(
     @Args('updateCompanyInput') updateCompanyInput: UpdateCompanyInput,
+    @CurrentUser([ValidRoles.ROOT]) user: ContextUser,
   ) {
     return this.companyService.update(
       updateCompanyInput.id,
