@@ -22,6 +22,7 @@ import { ClientModule } from './client/client.module';
 import { InventoryEventModule } from './inventory-event/inventory-event.module';
 import { SyncModule } from './sync/sync.module';
 import { LogisticModule } from './logistic/logistic.module';
+import { OperatorModule } from './operator/operator.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { LogisticModule } from './logistic/logistic.module';
     InventoryEventModule,
     SyncModule,
     LogisticModule,
+    OperatorModule,
   ],
   controllers: [AppController],
   providers: [AppService],
