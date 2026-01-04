@@ -24,6 +24,9 @@ async function main() {
         name: 'ROOT',
         description: 'Root profile with all permissions',
         slug: 'root',
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true,
       },
     }),
     prisma.role.upsert({
@@ -33,6 +36,9 @@ async function main() {
         name: 'ADMIN',
         description: 'Administrator profile with full access',
         slug: 'admin',
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true,
       },
     }),
     prisma.role.upsert({
