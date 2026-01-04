@@ -44,30 +44,22 @@ import { LogisticModule } from './logistic/logistic.module';
           ? ApolloServerPluginLandingPageLocalDefault()
           : ApolloServerPluginLandingPageProductionDefault(),
       ],
-      formatError: (error: GraphQLError) => {
-        const originalError = error.extensions?.originalError as any;
+      // formatError: (error: GraphQLError) => {
+      //   const originalError = error.extensions?.originalError as any;
         
-        if (originalError?.statusCode) {
-          const formattedError: GraphQLFormattedError = {
-            message: error.message,
-            extensions: {
-              code: originalError.error?.toUpperCase() || 'BAD_REQUEST',
-              statusCode: originalError.statusCode,
-            },
-          };
-          return formattedError;
-        }
+      //   if (originalError?.statusCode) {
+      //     const formattedError: GraphQLFormattedError = {
+      //       message: error.message,
+      //       extensions: {
+      //         code: originalError.error?.toUpperCase() || 'BAD_REQUEST',
+      //         statusCode: originalError.statusCode,
+      //       },
+      //     };
+      //     return formattedError;
+      //   }
         
-        return error;
-      },
-      // formatError: (err) => ({
-      //   message: err.message,
-      //   // status: err.extensions.code,
-      //   // extensions: err.extensions,
-      //   error: err.extensions.originalError['error'],
-      //   code: err.extensions.originalError['statusCode'],
-      //   originalMessage: err.extensions.originalError['message'],
-      // }),
+      //   return error;
+      // },
     }),
     UserModule,
     CommonModule,
