@@ -214,6 +214,8 @@ model InventoryArea {
 
   // Control Sync
   isSynced Boolean @default(false)
+
+  @@unique([eventId, name])
 }
 
 model InventoryTag {

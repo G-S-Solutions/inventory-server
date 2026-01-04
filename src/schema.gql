@@ -196,7 +196,7 @@ type InventoryArea {
   id: ID!
   name: String!
   eventId: ID!
-  tags: [InventoryTag]!
+  tags: [InventoryTag!]
 }
 
 type Query {
@@ -214,7 +214,7 @@ type Query {
   clientFindById(id: ID!): Client!
   invEventFindAll: [InventoryEvent!]!
   invEventFindById(id: ID!): InventoryEvent!
-  inventoryAreas(eventId: ID!): [InventoryArea!]!
+  logisticGetAreas(eventId: ID!): [InventoryArea!]!
 }
 
 type Mutation {
@@ -239,7 +239,8 @@ type Mutation {
   invEventCreate(createInvEvntInput: CreateInventoryEventInput!): InventoryEvent!
   invEventUpdate(updateInvEvntInput: UpdateInventoryEventInput!): InventoryEvent!
   invEventRemove(id: ID!): InventoryEvent!
-  createArea(input: CreateAreaInput!): InventoryArea!
+  logisticCreateArea(input: CreateAreaInput!): InventoryArea!
+  logisticGenerateTags(input: GenerateTagsInput!): InventoryArea!
 }
 
 input CreateUserInput {
@@ -388,4 +389,12 @@ input UpdateInventoryEventInput {
 input CreateAreaInput {
   eventId: ID!
   name: String!
+}
+
+input GenerateTagsInput {
+  eventId: ID!
+  areaId: ID!
+  rangeStart: Int!
+  rangeEnd: Int!
+  zeroPadding: Int! = 5
 }

@@ -13,6 +13,6 @@ export class InventoryArea {
   eventId: string;
 
   // Relación: Un área tiene muchos tags
-  @Field(() => [InventoryTag], { nullable: 'items' })
+  @Field(() => [InventoryTag], { nullable: true })
   tags?: InventoryTag[];
 }
